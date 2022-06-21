@@ -1,16 +1,16 @@
 package com.makersacademy.acebook.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
 import com.makersacademy.acebook.model.Authority;
 import com.makersacademy.acebook.model.User;
 import com.makersacademy.acebook.repository.AuthoritiesRepository;
 import com.makersacademy.acebook.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class UsersController {
@@ -20,17 +20,19 @@ public class UsersController {
     @Autowired
     AuthoritiesRepository authoritiesRepository;
 
-    @GetMapping("/users/new")
-    public String signup(Model model) {
-        model.addAttribute("user", new User());
-        return "users/new";
-    }
+    // @GetMapping("/users/new")
+    // public String signup(ModelMap model) {
+    // model.addAttribute("user", new User());
+    // // return new ModelAndView("redirect:users/new", model);
+    // // // return new RedirectView("users/new");
+    // return "users/new";
+    // }
 
     @PostMapping("/users")
-    public RedirectView signup(@ModelAttribute User user) {
+    public ResponseEntity<?> signup(@ModelAttribute User user) {
         userRepository.save(user);
         Authority authority = new Authority(user.getUsername(), "ROLE_USER");
         authoritiesRepository.save(authority);
-        return new RedirectView("/login");
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 }

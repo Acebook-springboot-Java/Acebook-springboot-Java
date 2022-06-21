@@ -14,4 +14,10 @@ public class PostTest {
 		assertThat(post.getContent(), containsString("hello"));
 	}
 
+	@Test
+	public void setContentChangesContent() {
+		post.setContent("this is a new content!!");
+		assertEquals(String.valueOf("this is a new content!!"), post.getContent());
+	}
+
 }
