@@ -13,7 +13,7 @@ public class PostsController {
 
     @Autowired
     PostRepository repository;
-
+    @CrossOrigin
     @GetMapping("/posts")
     public String index(Model model) {
         Iterable<Post> posts = repository.findAll();
@@ -21,7 +21,7 @@ public class PostsController {
         model.addAttribute("post", new Post());
         return "posts/index";
     }
-
+    @CrossOrigin
     @PostMapping("/posts")
     public RedirectView create(@ModelAttribute Post post) {
         repository.save(post);
