@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -27,12 +28,13 @@ public class UsersController {
     // // // return new RedirectView("users/new");
     // return "users/new";
     // }
-
+    @CrossOrigin
     @PostMapping("/users")
-    public ResponseEntity<?> signup(@ModelAttribute User user) {
+    public String signup(@ModelAttribute User user) {
         userRepository.save(user);
         Authority authority = new Authority(user.getUsername(), "ROLE_USER");
         authoritiesRepository.save(authority);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        // return new ResponseEntity<>("GET response", HttpStatus.CREATED);
+        return "get response";
     }
 }
