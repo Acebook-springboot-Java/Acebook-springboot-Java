@@ -9,11 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.makersacademy.acebook.model.Authority;
 import com.makersacademy.acebook.model.User;
-import com.makersacademy.acebook.repository.AuthoritiesRepository;
 import com.makersacademy.acebook.repository.UserRepository;
 import com.makersacademy.acebook.services.ResponseHandler;
+import com.makersacademy.acebook.services.UserService;
 
 @Controller
 public class UsersController {
@@ -22,20 +21,17 @@ public class UsersController {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    AuthoritiesRepository authoritiesRepository;
+    UserService userService;
 
     @PostMapping("/users")
     public ResponseEntity<?> signup(@RequestBody User user) {
 
         if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
-            userRepository.save(user);
-            Authority authority = new Authority(user.getUsername(), "ROLE_USER");
-            authoritiesRepository.save(authority);
+            userService.createUser(user);
             logger.info("----------User: " + user.getUsername() + " created.");
-            logger.info("----------Authority given to " + authority.getUsername() + ": " + authority.getAuthority());
-            return ResponseHandler.generateResponse(HttpStatus.CREATED, true, "username created", user);
+            return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "username created", user);
         }
-        return ResponseHandler.generateResponse(HttpStatus.CONFLICT, false, "duplicated username", user);
+        return ResponseHandler.generateResponse(HttpStatus.CONFLICT, true, "duplicated username", user);
 
     }
 }
