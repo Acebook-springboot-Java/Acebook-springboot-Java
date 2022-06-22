@@ -25,10 +25,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/posts").hasRole("USER")
-                .antMatchers("/users").permitAll()
-                .and().formLogin();
+        // http.authorizeRequests()
+        // .antMatchers("/posts").hasRole("USER")
+        // .antMatchers("/users").permitAll()
+        // .and().formLogin();
+
+        // enable the line below to disable spring security
+        // http.ignoring().antMatchers("/**");
+
         http.csrf().disable();
     }
 

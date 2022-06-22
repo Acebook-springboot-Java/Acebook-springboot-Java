@@ -33,9 +33,9 @@ public class UsersController {
             authoritiesRepository.save(authority);
             logger.info("----------User: " + user.getUsername() + " created.");
             logger.info("----------Authority given to " + authority.getUsername() + ": " + authority.getAuthority());
-            return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "username created", user);
+            return ResponseHandler.generateResponse(HttpStatus.CREATED, true, "username created", user);
         }
-        return ResponseHandler.generateResponse(HttpStatus.CONFLICT, true, "duplicated username", user);
+        return ResponseHandler.generateResponse(HttpStatus.CONFLICT, false, "duplicated username", user);
 
     }
 }

@@ -1,18 +1,5 @@
 package com.makersacademy.acebook.controller;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.makersacademy.acebook.repository.AuthoritiesRepository;
-import com.makersacademy.acebook.repository.UserRepository;
-import com.makersacademy.acebook.services.ResponseHandler;
-
 // @RunWith(SpringRunner.class)
 // @ExtendWith(SpringExtension.class)
 public class UsersControllerTest {
