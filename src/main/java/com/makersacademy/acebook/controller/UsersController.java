@@ -23,15 +23,14 @@ public class UsersController {
     @Autowired
     UserService userService;
 
-
     @PostMapping("/users")
     public ResponseEntity<?> signup(@RequestBody User user) {
-        
+
         if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
             userService.createUser(user);
             logger.info("----------User: " + user.getUsername() + " created.");
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "username created", user);
-        } 
+        }
         return ResponseHandler.generateResponse(HttpStatus.CONFLICT, true, "duplicated username", user);
 
     }
