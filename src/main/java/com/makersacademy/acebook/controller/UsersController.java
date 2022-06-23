@@ -26,7 +26,7 @@ public class UsersController {
     @PostMapping("/users")
     public ResponseEntity<?> signup(@RequestBody User user) {
 
-        if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
+        if (userRepository.findByUsername(user.getUsername()) == null) {
             userService.createUser(user);
             logger.info("----------User: " + user.getUsername() + " created.");
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "username created", user);

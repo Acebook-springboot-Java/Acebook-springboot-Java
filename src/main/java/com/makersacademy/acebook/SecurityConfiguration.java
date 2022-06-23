@@ -22,41 +22,46 @@ import com.makersacademy.acebook.security.*;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     public SecurityConfiguration(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-      this.userDetailsService = userDetailsService;
-      this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userDetailsService = userDetailsService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-      auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
         /*
-    @Autowired
-    DataSource dataSource;
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .passwordEncoder(passwordEncoder());
-        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder()).withUser("spring")
-                .password(passwordEncoder().encode("thisisfortestsonly"))
-                .roles("USER");
-      */
+         * @Autowired
+         * DataSource dataSource;
+         * 
+         * @Override
+         * protected void configure(AuthenticationManagerBuilder auth) throws Exception
+         * {
+         * auth.jdbcAuthentication()
+         * .dataSource(dataSource)
+         * .passwordEncoder(passwordEncoder());
+         * auth.inMemoryAuthentication().passwordEncoder(passwordEncoder()).withUser(
+         * "spring")
+         * .password(passwordEncoder().encode("thisisfortestsonly"))
+         * .roles("USER");
+         */
     }
 
     /*
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/posts").hasRole("USER")
-                .antMatchers("/users").permitAll()
-                .and().formLogin();
-                
-
-        // enable the line below to disable spring security
-        // http.ignoring().antMatchers("/**");
-
-        http.csrf().disable();*/
+     * @Override
+     * protected void configure(HttpSecurity http) throws Exception {
+     * http.authorizeRequests()
+     * .antMatchers("/posts").hasRole("USER")
+     * .antMatchers("/users").permitAll()
+     * .and().formLogin();
+     * 
+     * 
+     * // enable the line below to disable spring security
+     * // http.ignoring().antMatchers("/**");
+     * 
+     * http.csrf().disable();
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().authorizeRequests()
@@ -70,18 +75,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
-  @Bean
-  CorsConfigurationSource corsConfigurationSource() {
-      final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-      CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-      source.registerCorsConfiguration("/**", corsConfiguration);
+        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        source.registerCorsConfiguration("/**", corsConfiguration);
 
-      return source;
-  }
+        return source;
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-      return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
