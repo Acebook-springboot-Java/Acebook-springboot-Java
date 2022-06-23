@@ -1,17 +1,16 @@
 package com.makersacademy.acebook.services;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.makersacademy.acebook.model.User;
+import com.makersacademy.acebook.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -22,11 +21,15 @@ public class UserServiceTest {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Test
     public void shouldReceiveEncodedPassword() {
         User user = new User("testUser", "testPassword");
-        System.out.println(userService.createUser(user));
-        userService.createUser(user);
-
+        User encryptedUser = userService.createUser(user);
+        String expected = encryptedUser.getPassword();
+        User userFromDB = userRepository.findByUsername(user.getUsername()).get(0);
+        assertThat(userFromDB.getPassword()).isEqualTo(expected);
     }
 }
