@@ -1,14 +1,14 @@
 package com.makersacademy.acebook.model;
 
+import static java.lang.Boolean.TRUE;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.GenerationType;
 
 import lombok.Data;
-
-import static java.lang.Boolean.TRUE;
 
 @Data
 @Entity

@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.makersacademy.acebook.config.SecurityConstants;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+    private static final Logger logger = LogManager.getLogger(JWTAuthenticationFilter.class);
 
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
@@ -27,7 +30,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         String header = req.getHeader(SecurityConstants.HEADER_STRING);
-
+        logger.info("-----------Header:{}", header);
         if (header == null || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             chain.doFilter(req, res);
             return;

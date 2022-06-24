@@ -27,7 +27,7 @@ public class UserService {
     // // user.setUsername(user.getUsername());
     String password = user.getPassword();
     String encodedPassword = bCryptPasswordEncoder.encode(password);
-    logger.info("***username****" + password);
+    logger.info("***password****" + password);
     logger.info("***encodedPass****" + encodedPassword);
     user.setPassword(encodedPassword);
     Authority authority = new Authority(user.getUsername(), "ROLE_USER");

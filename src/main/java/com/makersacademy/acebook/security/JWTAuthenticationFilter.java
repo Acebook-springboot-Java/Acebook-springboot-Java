@@ -10,6 +10,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +26,8 @@ import com.makersacademy.acebook.config.SecurityConstants;
 import com.makersacademy.acebook.model.User;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    private static final Logger logger = LogManager.getLogger(JWTAuthenticationFilter.class);
+
     private AuthenticationManager authenticationManager;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -36,13 +40,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
             HttpServletResponse res) throws AuthenticationException {
         try {
+            logger.info("---------ATTEMPT TO JWT AUTENTICATE---------");
             User creds = new ObjectMapper().readValue(req.getInputStream(), User.class);
-
+            logger.info("---------AUTHENTICATE USER:{} PASSWORD:{}---------", creds.getUsername(), creds.getPassword());
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(creds.getUsername(), creds.getPassword(),
                             new ArrayList<>()));
 
         } catch (IOException e) {
+            logger.info("---------NO JWT PROVIDED EXCEPTION--------");
             throw new RuntimeException(e);
         }
     }
@@ -52,17 +58,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletResponse res,
             FilterChain chain,
             Authentication auth) throws IOException {
+        logger.info("---------JWT AUTENTICATE SUCCESSFUL--------");
 
+        logger.info("---------Casting principal to user---------");
+        org.springframework.security.core.userdetails.User authenticatedSecurityUser = ((org.springframework.security.core.userdetails.User) auth
+                .getPrincipal());
+        logger.info("---------JWT CREATING TOKEN--------");
         String access_token = JWT.create()
-                .withSubject(((User) auth.getPrincipal()).getUsername())
+                .withSubject(authenticatedSecurityUser.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()));
 
-        String body = ((User) auth.getPrincipal()).getUsername() + " " + token;
+        logger.info("---------JWT created {}---------", access_token);
 
-        // res.getWriter().write(body);
-        // res.getWriter().flush();
-
+        logger.info("---------WRITING JWT HEADER RESPONSE---------");
         Map<String, String> token = new HashMap<>();
         token.put("token", access_token);
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);

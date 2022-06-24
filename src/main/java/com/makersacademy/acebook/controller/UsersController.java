@@ -23,9 +23,9 @@ public class UsersController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/new")
     public ResponseEntity<?> signup(@RequestBody User user) {
-
+        logger.info("---------POST request for /users---------");
         if (userRepository.findByUsername(user.getUsername()) == null) {
             userService.createUser(user);
             logger.info("----------User: " + user.getUsername() + " created.");
@@ -34,4 +34,5 @@ public class UsersController {
         return ResponseHandler.generateResponse(HttpStatus.CONFLICT, true, "duplicated username", user);
 
     }
+
 }
