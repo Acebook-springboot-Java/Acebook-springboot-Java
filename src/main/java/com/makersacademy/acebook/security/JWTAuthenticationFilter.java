@@ -3,11 +3,14 @@ package com.makersacademy.acebook.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,15 +53,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             FilterChain chain,
             Authentication auth) throws IOException {
 
-        String token = JWT.create()
+        String access_token = JWT.create()
                 .withSubject(((User) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()));
 
         String body = ((User) auth.getPrincipal()).getUsername() + " " + token;
 
-        res.getWriter().write(body);
-        res.getWriter().flush();
+        // res.getWriter().write(body);
+        // res.getWriter().flush();
+
+        Map<String, String> token = new HashMap<>();
+        token.put("token", access_token);
+        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(res.getOutputStream(), token);
     }
 
 }
