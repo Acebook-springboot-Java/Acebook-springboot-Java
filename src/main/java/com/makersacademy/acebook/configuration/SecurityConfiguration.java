@@ -1,4 +1,4 @@
-package com.makersacademy.acebook;
+package com.makersacademy.acebook.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +16,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+
+import java.util.Arrays;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -42,7 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
-                .antMatchers("/users").permitAll()
+                .antMatchers("/users/new").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
@@ -50,21 +52,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
 
-//     @Bean
-//     CorsConfigurationSource corsConfigurationSource() {
-//     final UrlBasedCorsConfigurationSource source = new
-//     UrlBasedCorsConfigurationSource();
-//
-//     CorsConfiguration corsConfiguration = new
-//     CorsConfiguration().applyPermitDefaultValues();
-//     source.registerCorsConfiguration("/**", corsConfiguration);
-//
-//     return source;
-//     }
-
-
-
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("https://verdant-selkie-484c63.netlify.app")); //CORS static url of the website hosted online, all others will be blocked and return 403.
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

@@ -1,4 +1,4 @@
-package com.makersacademy.acebook.config;
+package com.makersacademy.acebook.configuration;
 
 public class SecurityConstants {
     public static final String SECRET = "ThisIs_s3cr3tkey";

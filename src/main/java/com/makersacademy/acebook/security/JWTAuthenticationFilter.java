@@ -3,8 +3,6 @@ package com.makersacademy.acebook.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.Cookie;
@@ -23,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.makersacademy.acebook.config.SecurityConstants;
+import com.makersacademy.acebook.configuration.SecurityConstants;
 import com.makersacademy.acebook.model.User;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

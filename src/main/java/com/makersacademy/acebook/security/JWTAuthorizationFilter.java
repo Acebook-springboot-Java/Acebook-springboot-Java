@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.makersacademy.acebook.config.SecurityConstants;
+import com.makersacademy.acebook.configuration.SecurityConstants;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private static final Logger logger = LogManager.getLogger(JWTAuthenticationFilter.class);
