@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,7 +41,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
             HttpServletResponse res) throws AuthenticationException {
         try {
-            logger.info("---------ATTEMPT TO JWT AUTENTICATE---------");
+            logger.info("---------REQ Body:{}---------",req.toString());
+            logger.info("---------ATTEMPT TO JWT AUTHENTICATE---------");
             User creds = new ObjectMapper().readValue(req.getInputStream(), User.class);
             logger.info("---------AUTHENTICATE USER:{} PASSWORD:{}---------", creds.getUsername(), creds.getPassword());
             return authenticationManager.authenticate(
@@ -58,7 +60,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletResponse res,
             FilterChain chain,
             Authentication auth) throws IOException {
-        logger.info("---------JWT AUTENTICATE SUCCESSFUL--------");
+        logger.info("---------JWT AUTHENTICATE SUCCESSFUL--------");
 
         logger.info("---------Casting principal to user---------");
         org.springframework.security.core.userdetails.User authenticatedSecurityUser = ((org.springframework.security.core.userdetails.User) auth
@@ -71,11 +73,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         logger.info("---------JWT created {}---------", access_token);
 
+
         logger.info("---------WRITING JWT HEADER RESPONSE---------");
-        Map<String, String> token = new HashMap<>();
-        token.put("token", access_token);
+//        Map<String, String> token = new HashMap<>();
+//        token.put("token", access_token);
+
+        Cookie cookie = new Cookie("auth",access_token);
+        cookie.setMaxAge(30 * 60); // expires in 30 minutes
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/login");
+        logger.info("---------ADDING A COOKIE: {}---------", cookie);
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(res.getOutputStream(), token);
+        res.addCookie(cookie);
+        new ObjectMapper().writeValue(res.getOutputStream(), "authentication successful for user "+authenticatedSecurityUser.getUsername());
     }
 
 }

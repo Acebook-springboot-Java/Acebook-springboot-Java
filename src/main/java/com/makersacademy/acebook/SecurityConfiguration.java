@@ -12,6 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.makersacademy.acebook.security.JWTAuthenticationFilter;
 import com.makersacademy.acebook.security.JWTAuthorizationFilter;
 import com.makersacademy.acebook.services.UserLoginDetailsService;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -47,17 +51,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
-    // @Bean
-    // CorsConfigurationSource corsConfigurationSource() {
-    // final UrlBasedCorsConfigurationSource source = new
-    // UrlBasedCorsConfigurationSource();
+//     @Bean
+//     CorsConfigurationSource corsConfigurationSource() {
+//     final UrlBasedCorsConfigurationSource source = new
+//     UrlBasedCorsConfigurationSource();
+//
+//     CorsConfiguration corsConfiguration = new
+//     CorsConfiguration().applyPermitDefaultValues();
+//     source.registerCorsConfiguration("/**", corsConfiguration);
+//
+//     return source;
+//     }
 
-    // CorsConfiguration corsConfiguration = new
-    // CorsConfiguration().applyPermitDefaultValues();
-    // source.registerCorsConfiguration("/**", corsConfiguration);
 
-    // return source;
-    // }
 
     @Bean
     @Override
