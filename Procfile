@@ -1,2 +1,2 @@
-release: mvn flyway:migrate
-web: mvn spring-boot:run
+release: ./mvnw flyway:migrate
+web: ./mvnw spring-boot:run
