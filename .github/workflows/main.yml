@@ -17,10 +17,6 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Drop tables with Flyway
-      run: mvn flyway:clean
-    - name: Migrate DB with Flyway
-      run: mvn flyway:migrate
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: run test 
