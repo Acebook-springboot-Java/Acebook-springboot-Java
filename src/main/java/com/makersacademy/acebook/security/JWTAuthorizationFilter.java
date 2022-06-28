@@ -2,9 +2,11 @@ package com.makersacademy.acebook.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,7 +33,19 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             throws IOException, ServletException {
         String header = req.getHeader(SecurityConstants.HEADER_STRING);
         logger.info("-----------Header:{}", header);
+
+        Cookie[] cookie = req.getCookies();
+        logger.info("-----------Cookie:{}", cookie);
+
+        if (cookie == null) {
+            logger.info("-----------Cookie is empty------------");
+            chain.doFilter(req,res);
+            return;
+        }
+
         if (header == null || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+            logger.info("-----------Header is empty------------");
+            logger.info("-----------Header start with:{}------------",header);
             chain.doFilter(req, res);
             return;
         }
@@ -40,18 +54,21 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         // if we need role based authorization, use securitycontextholder to set it
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(req, res);
-
     }
 
     // read the JWT from the Authorization header
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(SecurityConstants.HEADER_STRING);
+//        String token = request.getHeader(SecurityConstants.HEADER_STRING);
+//        logger.info("-----------Header Constant:{}", token);
+        Cookie[] cookies = request.getCookies();
+        String cookieContents = Arrays.stream(cookies).filter(c-> "auth".equals(c.getName())).findAny().map(c->c.getValue()).orElse(null);
 
-        if (token != null) {
+
+        if (cookieContents != null) {
             // parse token
             String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()))
                     .build()
-                    .verify(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
+                    .verify(cookieContents)
                     .getSubject();
 
             if (user != null) {

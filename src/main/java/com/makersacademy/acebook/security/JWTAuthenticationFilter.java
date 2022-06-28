@@ -84,9 +84,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         ResponseCookie responseCookie = ResponseCookie.from("auth",access_token)
                 .maxAge(30 * 60)
+                .path("/") //allow requests send from posts to have cookie set from /login
                 .secure(true)
                 .httpOnly(true)
-                .sameSite("Lax")
+                .sameSite("none")
                 .build();
 
 //        logger.info("---------ADDING A COOKIE: {}---------", cookie);
