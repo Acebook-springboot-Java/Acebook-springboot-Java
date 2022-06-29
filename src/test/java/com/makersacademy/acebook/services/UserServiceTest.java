@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -26,7 +27,7 @@ public class UserServiceTest {
     UserRepository userRepository;
 
     @WithMockUser("spring")
-    @Test
+    @Ignore @Test
     public void shouldReceiveEncodedPassword() {
         User user = new User("testUser", "testPassword");
         User encryptedUser = userService.createUser(user);
