@@ -40,14 +40,24 @@ public class PostsController {
         return ResponseHandler.generateResponse(HttpStatus.OK, true, "posts created", post);
     }
 
+    @GetMapping("/posts/{id}")
+    public ResponseEntity<?> getPost(@PathVariable("id") int id) {
+        logger.info("---------GET request send to /posts/{id}------");
+        try {
+          Post post = postRepository.findById(id);
+          return ResponseHandler.generateResponse(HttpStatus.OK, true, "post found", post);}
+          } 
+    }
+
     @PatchMapping("/posts/{id}")
-    public ResponseEntity<?> update(@RequestBody Post post, @PathVariable("id") Long id) {
+    public ResponseEntity<?> update(@RequestBody Post post, @PathVariable("id") int id) {
         logger.info("---------PATCH request sent to /posts{id}------");
         try {
-          String content = post.toString();
+          String content = post.getContent();
           Post existingPost = postRepository.findById(id).get();
           Post updatedPost = existingPost.setContent(content);
-          return ResponseHandler.generateResponse(HttpStatus.OK, true, "post edited", updatedPost);}
+          return ResponseHandler.generateResponse(HttpStatus.OK, true, "post edited", updatedPost);
+        }
         catch (Exception e) {
           return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, false, "post not found", post)
         }
@@ -60,18 +70,5 @@ public class PostsController {
         return ResponseHandler.generateResponse(HttpStatus.OK, true, "post deleted", post);
     }
 
-    @GetMapping("/posts/{id}")
-    public ResponseEntity<?> getPost(@PathVariable("id") Long id) {
-        logger.info("---------GET request send to /posts{id}------");
-    }
-}
 
-
-try {
-  Employee employee = employeeRepository.findById(id).get();
-  employee.setFirstName(firstName);
-  return new ResponseEntity<Employee>(employeeRepository.save(employee), HttpStatus.OK);
-} catch (Exception e) {
-  return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-}
 }
