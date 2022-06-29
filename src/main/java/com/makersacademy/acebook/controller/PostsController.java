@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 import com.makersacademy.acebook.model.Post;
 import com.makersacademy.acebook.repository.PostRepository;
 import com.makersacademy.acebook.services.ResponseHandler;
@@ -68,7 +67,7 @@ public class PostsController {
 
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-        logger.info("---------POST request send to /posts---------");
+        logger.info("---------DELETE request send to /posts---------");
         try {
         postRepository.deleteById(id);
         return ResponseHandler.generateResponse(HttpStatus.OK, true, "post deleted", id);
