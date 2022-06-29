@@ -45,8 +45,11 @@ public class PostsController {
         logger.info("---------GET request send to /posts/{id}------");
         try {
           Post post = postRepository.findById(id);
-          return ResponseHandler.generateResponse(HttpStatus.OK, true, "post found", post);}
-          } 
+          return ResponseHandler.generateResponse(HttpStatus.OK, true, "post found", post);
+        } 
+        catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, false, "post not found", id);
+          }
     }
 
     @PatchMapping("/posts/{id}")
@@ -54,21 +57,25 @@ public class PostsController {
         logger.info("---------PATCH request sent to /posts{id}------");
         try {
           String content = post.getContent();
-          Post existingPost = postRepository.findById(id).get();
-          Post updatedPost = existingPost.setContent(content);
+          Post updatedPost = postRepository.findById(id);
+          updatedPost.setContent(content);
+          postRepository.save(updatedPost);
           return ResponseHandler.generateResponse(HttpStatus.OK, true, "post edited", updatedPost);
         }
         catch (Exception e) {
-          return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, false, "post not found", post)
+          return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, false, "post not found", post);
         }
     }
 
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         logger.info("---------POST request send to /posts---------");
+        try {
         postRepository.deleteById(id);
-        return ResponseHandler.generateResponse(HttpStatus.OK, true, "post deleted", post);
+        return ResponseHandler.generateResponse(HttpStatus.OK, true, "post deleted", id);
+        }
+        catch (Exception e) {
+          return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, false, "post not found", id);  
+        }
     }
-
-
 }
