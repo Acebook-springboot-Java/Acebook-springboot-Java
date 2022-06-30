@@ -84,7 +84,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        cookie.setPath("/login");
 
         ResponseCookie responseCookie = ResponseCookie.from("auth",access_token)
-                .maxAge(1000 * 60 * 60)
+                .maxAge(60 * 60)
                 .path("/") //allow requests send from posts to have cookie set from /login
                 .secure(true)
                 .httpOnly(true)
