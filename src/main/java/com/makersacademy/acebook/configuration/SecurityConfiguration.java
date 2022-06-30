@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 @EnableWebSecurity
@@ -47,7 +48,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/new").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .logout().logoutUrl("/logout").deleteCookies("auth").invalidateHttpSession(true)
+                .logout().logoutUrl("/logout").deleteCookies("auth").invalidateHttpSession(true).logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
+                    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                })
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
