@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -83,7 +84,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        cookie.setPath("/login");
 
         ResponseCookie responseCookie = ResponseCookie.from("auth",access_token)
-                .maxAge(30 * 60)
+                .maxAge(60 * 60)
                 .path("/") //allow requests send from posts to have cookie set from /login
                 .secure(true)
                 .httpOnly(true)
@@ -110,6 +111,28 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         logger.info("---------ADDING A COOKIE: {}---------", responseCookie);
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         res.addHeader(HttpHeaders.SET_COOKIE,responseCookie.toString());
+        new ObjectMapper().writeValue(res.getOutputStream(), responseJson);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse res, AuthenticationException authException) throws IOException, ServletException {
+        logger.info("---------JWT AUTHENTICATE UNSUCCESSFUL--------");
+
+        Map<String, Object> responseJson = new HashMap<String, Object>();
+        try {
+            responseJson.put("timestamp", new Date());
+            responseJson.put("status", HttpStatus.FORBIDDEN);
+            responseJson.put("isSuccess", Boolean.TRUE);
+            responseJson.put("message", "Authentication Unsuccessful");
+        } catch (Exception e) {
+            responseJson.clear();
+            responseJson.put("timestamp", new Date());
+            responseJson.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseJson.put("isSuccess", false);
+            responseJson.put("message", e.getMessage());
+        }
+
+        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(res.getOutputStream(), responseJson);
     }
 
