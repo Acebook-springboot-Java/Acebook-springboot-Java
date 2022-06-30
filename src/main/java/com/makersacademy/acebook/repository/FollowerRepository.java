@@ -6,4 +6,7 @@ import com.makersacademy.acebook.model.Follower;
 
 public interface FollowerRepository extends CrudRepository<Follower, Long> {
   Follower findByUserId(Long userId);
+
+  Follower findbyId(Long id);
+
 }
