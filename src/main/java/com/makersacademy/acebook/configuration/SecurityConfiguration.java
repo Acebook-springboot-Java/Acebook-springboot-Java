@@ -47,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/new").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .logout().logoutUrl("/logout").logoutSuccessUrl("/login").deleteCookies("auth").invalidateHttpSession(true)
+                .logout().logoutUrl("/logout").deleteCookies("auth").invalidateHttpSession(true)
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
