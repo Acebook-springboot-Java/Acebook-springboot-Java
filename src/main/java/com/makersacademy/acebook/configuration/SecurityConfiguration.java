@@ -1,7 +1,13 @@
 package com.makersacademy.acebook.configuration;
 
+import com.makersacademy.acebook.security.JWTAuthenticationFilter;
+import com.makersacademy.acebook.security.JWTAuthorizationFilter;
+import com.makersacademy.acebook.services.CustomLogoutSuccessHandler;
+import com.makersacademy.acebook.services.UserLoginDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,13 +15,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import com.makersacademy.acebook.security.JWTAuthenticationFilter;
-import com.makersacademy.acebook.security.JWTAuthorizationFilter;
-import com.makersacademy.acebook.services.UserLoginDetailsService;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -48,9 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/new").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .logout().logoutUrl("/logout").deleteCookies("auth").invalidateHttpSession(true).logoutSuccessHandler((httpServletRequest, httpServletResponse, authentication) -> {
-                    httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                })
+                .logout().logoutUrl("/logout").invalidateHttpSession(true).logoutSuccessHandler(logoutSuccessHandler())
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
@@ -73,6 +74,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        return new CustomLogoutSuccessHandler();
     }
 
 }
