@@ -1,60 +1,99 @@
-//package com.makersacademy.acebook.controller;
-//
-//import com.makersacademy.acebook.Application;
-//import com.makersacademy.acebook.repository.AuthoritiesRepository;
-//import com.makersacademy.acebook.repository.UserRepository;
-//import com.makersacademy.acebook.services.ResponseHandler;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.web.client.TestRestTemplate;
-//import org.springframework.boot.web.server.LocalServerPort;
-//import org.springframework.http.HttpEntity;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.test.context.junit4.SpringRunner;
-//
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//public class UsersControllerTest {
-//
-//     @LocalServerPort
-//     private int port;
-//
-//     TestRestTemplate restTemplate = new TestRestTemplate();
-//
-//     HttpHeaders headers = new HttpHeaders();
-//
-//     @Test
-//     public void usersControllerTests(){
-//          HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-//
-//          ResponseEntity<String> response = restTemplate.exchange(
-//                  createURLWithPort("/students/Student1/courses/Course1"),
-//                  HttpMethod.GET, entity, String.class);
-//     }
-//
-//     private String createURLWithPort(String uri) {
-//          return "http://localhost:" + port + uri;
-//     }
-//     @Test
-//     public void createUserAPI() throws Exception {
-//     this.mockMvc.perform(post("/users"))
-//     .content(asJsonString(new User("testuser1", "password")))
-//     .contentType(MediaType.APPLICATION_JSON)
-//     .accept(MediaType.APPLICATION_JSON)
-//     .andExpect(MockMvcResultMatchers.status().isCreated());
-//     // .andExpect(MockMvcResultMatchers.jsonPath("$[0].username").exists());
-//     }
-//
-//     public static String asJsonString(final Object obj) {
-//         try {
-//         return new ObjectMapper().writeValueAsString(obj);
-//         } catch (Exception e) {
-//         throw new RuntimeException(e);
-//         }
-//     }
-//
-//}
+package com.makersacademy.acebook.controller;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.junit.Assert;
+// import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import  static org.hamcrest.CoreMatchers.containsString;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.makersacademy.acebook.model.User;
+import com.makersacademy.acebook.repository.UserRepository;
+
+@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+public class UsersControllerTest 
+{
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+     
+    @LocalServerPort
+    int randomServerPort;
+
+    /*
+    @Before
+    public void init() {
+      userRepository.deleteAll();
+    }
+     */
+
+    @Test
+    public void addUserIsSuccess() throws URISyntaxException 
+    {
+        final String baseUrl = "http://localhost:"+randomServerPort+"/users/new";
+        URI uri = new URI(baseUrl);
+        User userBob = new User("Bob", "bobPass123"); 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonString = mapper.writeValueAsString(userBob);
+            HttpEntity<String> request = new HttpEntity<>(jsonString, headers);
+            ResponseEntity<String> result = this.restTemplate.postForEntity(uri, request, String.class);
+            // Verify request succeed
+            Assert.assertEquals(201, result.getStatusCodeValue());
+            Assert.assertThat(result.toString(), containsString("Bob"));
+            Assert.assertThat(result.toString(), containsString("true"));
+            Assert.assertThat(result.toString(), containsString("username created"));
+            // System.out.println(result);
+          } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void addUserFails() throws URISyntaxException  
+    {
+        final String baseUrl = "http://localhost:"+randomServerPort+"/users/new";
+        URI uri = new URI(baseUrl);
+        User userBob = new User("Bob", "bobPass123"); 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonString = mapper.writeValueAsString(userBob);
+            HttpEntity<String> request = new HttpEntity<>(jsonString, headers);
+            ResponseEntity<Object> result = this.restTemplate.postForEntity(uri, request, Object.class);
+            //add same user
+            String jsonStringDup = mapper.writeValueAsString(userBob);
+            HttpEntity<String> requestDup = new HttpEntity<>(jsonString, headers);
+            ResponseEntity<Object> resultDup = this.restTemplate.postForEntity(uri, request, Object.class);
+            // Verify request failed
+            Assert.assertEquals(409, resultDup.getStatusCodeValue());
+            Assert.assertThat(resultDup.toString(), containsString("Bob"));
+            Assert.assertThat(resultDup.toString(), containsString("duplicated username"));
+            Assert.assertThat(resultDup.toString(), containsString("false"));
+            // System.out.println(result);
+          } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
