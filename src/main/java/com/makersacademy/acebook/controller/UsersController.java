@@ -29,9 +29,9 @@ public class UsersController {
         if (userRepository.findByUsername(user.getUsername()) == null) {
             userService.createUser(user);
             logger.info("----------User: " + user.getUsername() + " created.");
-            return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "username created", user);
+            return ResponseHandler.generateResponse(HttpStatus.CREATED, true, "username created", user);
         }
-        return ResponseHandler.generateResponse(HttpStatus.CONFLICT, true, "duplicated username", user);
+        return ResponseHandler.generateResponse(HttpStatus.CONFLICT, false, "duplicated username", user);
 
     }
 

@@ -44,7 +44,7 @@ public class PostsControllerTest {
     public void initialGetIsEmpty() throws URISyntaxException 
     {
         // Same as user controller test!
-        String baseUrl = "http://localhost:"+randomServerPort+"/users";
+        String baseUrl = "http://localhost:"+randomServerPort+"/users/new";
         URI uri = new URI(baseUrl);
         User userBob = new User("Bob", "bobPass123"); 
         HttpHeaders headers = new HttpHeaders();
@@ -64,11 +64,12 @@ public class PostsControllerTest {
               );
             // Verify login request succeed
             Assert.assertEquals(200, loginResult.getStatusCodeValue());
-            Assert.assertThat(loginResult.toString(), containsString("token"));
+            Assert.assertThat(loginResult.toString(), containsString("Set-Cookie"));
             // Extract token from Response string
             String resultString = loginResult.toString();
-            String tokenString = "auth=" + resultString.substring(15,179);
-            System.out.println(tokenString);
+            String tokenString = "auth="+resultString.substring(resultString.indexOf("auth=")+5,resultString.indexOf("Path=/;")-2);
+//            String tokenString = "auth=" + resultString.substring(15,179);
+            System.out.println("-------tokenString:"+tokenString+"---------------");
             // Set headers for posts Post request
             HttpHeaders postHeaders = new HttpHeaders();
             postHeaders.set("Accept", "*/*");
@@ -78,25 +79,27 @@ public class PostsControllerTest {
             postHeaders.set("Content-Length", "0");
             postHeaders.setContentType(MediaType.APPLICATION_JSON);
             postHeaders.set("Cookie", tokenString);
-            //postHeaders.set("Credentials", "include");
-            //postHeaders.set("Host", "localhost");
+            postHeaders.set("Credentials", "include");
+//            postHeaders.set("Host", "localhost");
+            postHeaders.set("Access-Control-Request-Method", "POST");
+            postHeaders.set("Origin", "https://verdant-selkie-484c63.netlify.app");
             System.out.println(postHeaders);
             String postUrl = "http://localhost:"+randomServerPort+"/posts";
             URI postUri = new URI(postUrl);
-            //ResponseEntity<String> postResult = this.restTemplate.getForObject(postUri, headers, String.class);
+//            ResponseEntity<String> postResult = this.restTemplate.getForObject(postUri, headers, String.class);
             
             HttpEntity<Void> requestEntity = new HttpEntity<>(postHeaders);
             ResponseEntity<String> postResult = restTemplate.exchange(
               postUri, HttpMethod.GET, requestEntity, String.class
               );
-            System.out.println(postResult);/*
+            System.out.println(postResult);
             Assert.assertThat(postResult.toString(), containsString("200"));
             Assert.assertThat(postResult.toString(), containsString("true"));
-            Assert.assertThat(postResult.toString(), containsString("username created"));
-            System.out.println(postResult);*/
+            Assert.assertThat(postResult.toString(), containsString("all posts received"));
           } catch (IOException e) {
             e.printStackTrace();
         }
     }
   // next test here
+    //check for submitted posts
 }

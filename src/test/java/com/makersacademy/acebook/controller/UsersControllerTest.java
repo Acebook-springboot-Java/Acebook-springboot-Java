@@ -48,7 +48,7 @@ public class UsersControllerTest
     @Test
     public void addUserIsSuccess() throws URISyntaxException 
     {
-        final String baseUrl = "http://localhost:"+randomServerPort+"/users";
+        final String baseUrl = "http://localhost:"+randomServerPort+"/users/new";
         URI uri = new URI(baseUrl);
         User userBob = new User("Bob", "bobPass123"); 
         HttpHeaders headers = new HttpHeaders();
@@ -72,7 +72,7 @@ public class UsersControllerTest
     @Test
     public void addUserFails() throws URISyntaxException  
     {
-        final String baseUrl = "http://localhost:"+randomServerPort+"/users";
+        final String baseUrl = "http://localhost:"+randomServerPort+"/users/new";
         URI uri = new URI(baseUrl);
         User userBob = new User("Bob", "bobPass123"); 
         HttpHeaders headers = new HttpHeaders();
@@ -82,11 +82,15 @@ public class UsersControllerTest
             String jsonString = mapper.writeValueAsString(userBob);
             HttpEntity<String> request = new HttpEntity<>(jsonString, headers);
             ResponseEntity<Object> result = this.restTemplate.postForEntity(uri, request, Object.class);
+            //add same user
+            String jsonStringDup = mapper.writeValueAsString(userBob);
+            HttpEntity<String> requestDup = new HttpEntity<>(jsonString, headers);
+            ResponseEntity<Object> resultDup = this.restTemplate.postForEntity(uri, request, Object.class);
             // Verify request failed
-            Assert.assertEquals(409, result.getStatusCodeValue());
-            Assert.assertThat(result.toString(), containsString("Bob"));
-            Assert.assertThat(result.toString(), containsString("duplicated username"));
-            Assert.assertThat(result.toString(), containsString("false"));
+            Assert.assertEquals(409, resultDup.getStatusCodeValue());
+            Assert.assertThat(resultDup.toString(), containsString("Bob"));
+            Assert.assertThat(resultDup.toString(), containsString("duplicated username"));
+            Assert.assertThat(resultDup.toString(), containsString("false"));
             // System.out.println(result);
           } catch (IOException e) {
             e.printStackTrace();
